@@ -10,6 +10,7 @@ namespace spider{
 
 	class   IniValue{
 	public:
+		IniValue();
 		IniValue(const bool& bVlaue);
 		IniValue(const int&  nVlaue);
 		IniValue(const float& fVlaue);
@@ -63,13 +64,17 @@ namespace spider{
 		void    show();
 		void    clear();
 
-		IniValue& get(const std::string& section, const std::string& key);
+		/*
+		param:section 
+		param:key
+		param:默认的参数
+		*/
+		IniValue get(const std::string& section, const std::string& key,IniValue DefaultValue);
 	private:
 		std::string  trim(std::string& str);
 		bool         load(const std::string& strFileName);
 
-		std::map<std::string, Section>        m_mapSectionIni;
-	
+		std::map<std::string, Section>        m_mapSection;
 	};
 
 

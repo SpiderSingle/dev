@@ -7,6 +7,10 @@
 namespace spider{
 
 
+	IniValue::IniValue()
+	{
+
+	}
 
 	IniValue::IniValue(const bool& bVlaue)
 	{
@@ -106,8 +110,7 @@ namespace spider{
 
 	CIniFile::CIniFile(const std::string &strFileName)
 	{
-		
-
+		load(strFileName);
 	}
 
 	CIniFile::~CIniFile()
@@ -117,7 +120,7 @@ namespace spider{
 
 	bool CIniFile::save(const std::string &strFileName)
 	{
-
+		return true;
 	}
 
 	void CIniFile::show()
@@ -130,13 +133,22 @@ namespace spider{
 
 	}
 
-	spider::IniValue& CIniFile::get(const std::string& section, const std::string& key)
+	spider::IniValue CIniFile::get(const std::string& section, const std::string& key,IniValue DefaultValue)
 	{
-
+		//判断是否存在section
+		std::map<std::string, Section>::iterator iter= m_mapSection.find(section);
+		if (iter == m_mapSection.end())
+			return DefaultValue;
+		//判断该section下是否存在Key
+		Section::iterator it = iter->second.find(key);
+		if (it == iter->second.end())
+			return DefaultValue;
+		return  it->second;		
 	}
 
 	std::string CIniFile::trim(std::string& str)
 	{
+		//去除前后的空格
 		if (str.empty())
 			return str;
 		str.erase(0, str.find_first_not_of(" \r\n\t"));
@@ -152,24 +164,38 @@ namespace spider{
 		port
 		
 		*/
-		m_mapSectionIni.clear();
+		m_mapSection.clear();
 		std::ifstream is(strFileName);
+		//if(is.fail())
 		if (!is.is_open())
 			return false;
 		std::string strReadLine;
 		std::string strline;
 		std::string strSection;
 		while (std::getline(is, strReadLine)){
-		
-			
-
-			
-
-
-
-
-
-		
+			strline = trim(strReadLine);
+			if (strline.empty())
+				continue;
+			if ('#'==strline[0])
+				continue;
+			if ('[' == strline[0]){
+				std::string::size_type npos = strline.find_last_of("]");
+				if (std::string::npos == npos)
+					continue;
+				strSection = strline.substr(1, npos-1);
+				m_mapSection[strSection] = Section();
+			}
+			else{
+				std::string::size_type npos = strline.find_first_of("=");
+				if (std::string::npos == npos)
+					continue;
+				std::string strKey = trim(strline.substr(0, npos));
+				std::string strValue = trim(strline.substr(npos+1));
+				m_mapSection[strSection][strKey] = strValue;	
+			}
 		}
+		is.close();
+		return m_mapSection.size() == 0 ? false : true;
 	}
+	
 }
