@@ -11,3 +11,6 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/../../bin)
 add_executable(OnExit ${ONEXIT_SRC})
 
 
+set_property(TARGET OnExit  PROPERTY FOLDER "win32")
+
+
